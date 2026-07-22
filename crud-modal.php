@@ -18,6 +18,19 @@ $data_akun = select("SELECT * FROM akun ORDER BY id_akun DESC");
 $id_akun = $_SESSION['id_akun'];
 $data_bylogin = select("SELECT * FROM akun WHERE id_akun = $id_akun");
 
+// agregasi jumlah akun per level untuk grafik (hanya dihitung dari data_akun yang sudah ada)
+$chart_level_labels = ['Admin', 'Operator Barang', 'Operator Mahasiswa'];
+$chart_level_counts = [0, 0, 0];
+foreach ($data_akun as $akun_c) {
+    if ($akun_c['level'] == '1') {
+        $chart_level_counts[0]++;
+    } elseif ($akun_c['level'] == '2') {
+        $chart_level_counts[1]++;
+    } elseif ($akun_c['level'] == '3') {
+        $chart_level_counts[2]++;
+    }
+}
+
 //jika tombol tambah di tekan jalankan script dibawah ini
 if (isset($_POST['tambah'])) {
     if (create_akun($_POST) > 0) {
@@ -133,6 +146,23 @@ if (isset($_POST['ubah'])) {
                             </div>
                         </div>
                     </div>
+
+                    <?php if ($_SESSION['level'] == 1): ?>
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i> Distribusi Akun per Level</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div style="position:relative; height:280px;">
+                                        <canvas id="chartLevelAkun"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </section>
         </div>
@@ -277,5 +307,49 @@ if (isset($_POST['ubah'])) {
     </div>
 
 <?php endforeach; ?>
+
+<?php if ($_SESSION['level'] == 1): ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+    (function () {
+        var ctx = document.getElementById('chartLevelAkun');
+        if (!ctx) return;
+
+        Chart.defaults.font.family = "'Source Sans Pro', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+        Chart.defaults.color = '#6c757d';
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: <?= json_encode($chart_level_labels); ?>,
+                datasets: [{
+                    label: 'Jumlah Akun',
+                    data: <?= json_encode($chart_level_counts); ?>,
+                    backgroundColor: ['#007bff', '#28a745', '#ffc107'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 14, padding: 15 }
+                    },
+                    tooltip: {
+                        backgroundColor: '#343a40',
+                        titleFont: { weight: 'bold' },
+                        cornerRadius: 4
+                    }
+                }
+            }
+        });
+    })();
+</script>
+<?php endif; ?>
 
 <?php include 'layout/footer.php' ?>

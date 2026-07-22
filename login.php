@@ -7,53 +7,67 @@ if (isset($_POST['login'])) {
     $username = mysqli_real_escape_string($db, $_POST['username']);
     $password = mysqli_real_escape_string($db, $_POST['password']);
 
-    //cek username
-    $result = mysqli_query($db, "SELECT * FROM akun WHERE username = '$username'");
+    $secret_key = "6LdheV0tAAAAABKgOobDbWLR2kFNMS_7U3ocEWGi";
 
-    //cek username
-    if (mysqli_num_rows($result) === 1) {
-        //cek password
-        $row = mysqli_fetch_assoc($result);
-        $storedPassword = $row['password'];
+    $verifikasi = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $secret_key . '&response=' . $_POST['g-recaptcha-response']);
 
-        if (password_verify($password, $storedPassword)) {
-            //set session
-            $_SESSION['login'] = true;
-            $_SESSION['id_akun'] = $row['id_akun'];
-            $_SESSION['nama'] = $row['nama'];
-            $_SESSION['username'] = $row['username'];
-            $_SESSION['email'] = $row['email'];
-            $_SESSION['level'] = $row['level'];
-            echo "<script>
+    $response = json_decode($verifikasi);
+
+    if ($response->success) {
+        //cek username
+        $result = mysqli_query($db, "SELECT * FROM akun WHERE username = '$username'");
+
+        //cek username
+        if (mysqli_num_rows($result) === 1) {
+            //cek password
+            $row = mysqli_fetch_assoc($result);
+            $storedPassword = $row['password'];
+
+
+            if (password_verify($password, $storedPassword)) {
+                //set session
+                $_SESSION['login'] = true;
+                $_SESSION['id_akun'] = $row['id_akun'];
+                $_SESSION['nama'] = $row['nama'];
+                $_SESSION['username'] = $row['username'];
+                $_SESSION['email'] = $row['email'];
+                $_SESSION['level'] = $row['level'];
+                echo "<script>
                 alert('Login berhasil!');
                 document.location.href = 'index.php';
             </script>";
-        } elseif ($storedPassword === $password) {
-            //fallback untuk akun lama yang password-nya masih plaintext
-            $newPasswordHash = password_hash($password, PASSWORD_DEFAULT);
-            mysqli_query($db, "UPDATE akun SET password = '$newPasswordHash' WHERE id_akun = " . $row['id_akun']);
+            } elseif ($storedPassword === $password) {
+                //fallback untuk akun lama yang password-nya masih plaintext
+                $newPasswordHash = password_hash($password, PASSWORD_DEFAULT);
+                mysqli_query($db, "UPDATE akun SET password = '$newPasswordHash' WHERE id_akun = " . $row['id_akun']);
 
-            $_SESSION['login'] = true;
-            $_SESSION['id_akun'] = $row['id_akun'];
-            $_SESSION['nama'] = $row['nama'];
-            $_SESSION['username'] = $row['username'];
-            $_SESSION['email'] = $row['email'];
-            $_SESSION['level'] = $row['level'];
-            echo "<script>
+                $_SESSION['login'] = true;
+                $_SESSION['id_akun'] = $row['id_akun'];
+                $_SESSION['nama'] = $row['nama'];
+                $_SESSION['username'] = $row['username'];
+                $_SESSION['email'] = $row['email'];
+                $_SESSION['level'] = $row['level'];
+                echo "<script>
                 alert('Login berhasil!');
                 document.location.href = 'index.php';
             </script>";
+            } else {
+                echo "<script>
+                alert('Password salah!');
+                document.location.href = 'login.php';
+            </script>";
+            }
         } else {
             echo "<script>
-                alert('Password salah!');
+                alert('Username tidak ditemukan!');
                 document.location.href = 'login.php';
             </script>";
         }
     } else {
         echo "<script>
-                alert('Username tidak ditemukan!');
-                document.location.href = 'login.php';
-            </script>";
+            alert('Verifikasi captcha gagal, silakan coba lagi!');
+            document.location.href = 'login.php';
+        </script>";
     }
 }
 ?>
@@ -97,12 +111,19 @@ if (isset($_POST['login'])) {
             <h1 class="h3 mb-3 fw-normal">Admin Login</h1>
 
             <div class="form-floating">
-                <input type="text" class="form-control" id="floatingInput" placeholder="Username" name="username" required>
+                <input type="text" class="form-control" id="floatingInput" placeholder="Username" name="username"
+                    required>
                 <label for="floatingInput">Username</label>
             </div>
             <div class="form-floating">
-                <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password" required>
+                <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password"
+                    required>
                 <label for="floatingPassword">Password</label>
+            </div>
+
+            <div class="mb-3">
+                <div class="g-recaptcha" data-sitekey="6LdheV0tAAAAAH7cZ-UaAlJNulB4QqMhdudSsxeX"></div>
+
             </div>
 
             <button class="w-100 btn btn-lg btn-primary" type="submit" name="login">Login</button>
@@ -110,6 +131,7 @@ if (isset($_POST['login'])) {
         </form>
     </main>
 
+    <script src="https://www.google.com/recaptcha/api.js"></script>
 
 </body>
 

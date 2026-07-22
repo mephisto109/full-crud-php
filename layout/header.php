@@ -42,6 +42,9 @@ $mahasiswa_pages_rahma = ['mahasiswa.php'];
     <link rel="stylesheet" href="assets-template/plugins/daterangepicker/daterangepicker.css">
     <!-- summernote -->
     <link rel="stylesheet" href="assets-template/plugins/summernote/summernote-bs4.min.css">
+
+    <!-- jQuery -->
+    <script src="assets-template/plugins/jquery/jquery.min.js"></script>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -109,7 +112,8 @@ $mahasiswa_pages_rahma = ['mahasiswa.php'];
                         <!-- Menu Data Barang (Akses: Level 1 & 2) -->
                         <?php if (isset($_SESSION['level']) && ($_SESSION['level'] == 1 || $_SESSION['level'] == 2)): ?>
                             <li class="nav-item">
-                                <a href="index.php" class="nav-link <?= in_array($current_page_rahma, $barang_pages_rahma) ? 'active' : ''; ?>">
+                                <a href="index.php"
+                                    class="nav-link <?= in_array($current_page_rahma, $barang_pages_rahma) ? 'active' : ''; ?>">
                                     <i class="nav-icon fas fa-box"></i>
                                     <p>Data Barang</p>
                                 </a>
@@ -119,16 +123,32 @@ $mahasiswa_pages_rahma = ['mahasiswa.php'];
                         <!-- Menu Data Mahasiswa (Akses: Level 1 & 3) -->
                         <?php if (isset($_SESSION['level']) && ($_SESSION['level'] == 1 || $_SESSION['level'] == 3)): ?>
                             <li class="nav-item">
-                                <a href="mahasiswa.php" class="nav-link <?= in_array($current_page_rahma, $mahasiswa_pages_rahma) ? 'active' : ''; ?>">
+                                <a href="mahasiswa.php"
+                                    class="nav-link <?= in_array($current_page_rahma, $mahasiswa_pages_rahma) ? 'active' : ''; ?>">
                                     <i class="nav-icon fas fa-user-graduate"></i>
                                     <p>Data Mahasiswa</p>
                                 </a>
                             </li>
                         <?php endif; ?>
 
+                        <li class="nav-item">
+                            <a href="pegawai.php" class="nav-link ">
+                                <i class="nav-icon fas fa-user-cog"></i>
+                                <p>Data Pegawai (Realtime)</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="email.php" class="nav-link ">
+                                <i class="nav-icon fas fa-user-cog"></i>
+                                <p>Kirim Email (PHPmailer)</p>
+                            </a>
+                        </li>
+
                         <!-- Menu Data Akun / Modal -->
                         <li class="nav-item">
-                            <a href="crud-modal.php" class="nav-link <?= $current_page_rahma == 'crud-modal.php' ? 'active' : ''; ?>">
+                            <a href="crud-modal.php"
+                                class="nav-link <?= $current_page_rahma == 'crud-modal.php' ? 'active' : ''; ?>">
                                 <i class="nav-icon fas fa-user-cog"></i>
                                 <p>Data Akun</p>
                             </a>
