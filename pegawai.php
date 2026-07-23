@@ -100,16 +100,15 @@ $data_pegawai = select("SELECT * FROM pegawai ORDER BY id_pegawai DESC");
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
     var chartJabatanPegawaiInstance = null;
 
-    // Polling tabel dijalankan terpisah dari Chart.js, supaya kalau CDN Chart.js
-    // gagal dimuat, tabel tetap jalan seperti semula.
+    // Polling tabel dijalankan terpisah dari Chart.js, supaya tabel tetap jalan
+    // walaupun Chart.js belum siap. Interval pendek cukup untuk demo, ubah jika perlu.
     $(document).ready(function() {
         setInterval(function() {
             getPegawai()
-        }, 200) // request per 2 detik
+        }, 200);
     });
 
     function getPegawai() {
@@ -117,21 +116,18 @@ $data_pegawai = select("SELECT * FROM pegawai ORDER BY id_pegawai DESC");
             url: "realtime-pegawai.php",
             type: "GET",
             success: function(response_rahma) {
-                // Menampilkan hasil respon dari server ke dalam elemen ber-ID live_data
                 $('#live_data').html(response_rahma);
                 updateChartJabatan();
             }
         });
     }
 
-    // Menghitung distribusi jabatan langsung dari baris tabel yang sudah tampil (tanpa data baru)
+    // Menghitung distribusi jabatan langsung dari baris tabel yang sudah tampil
     function updateChartJabatan() {
-        // Jika Chart.js gagal dimuat (mis. CDN diblokir), lewati saja tanpa mengganggu tabel
         if (typeof Chart === 'undefined') return;
 
         var counts = {};
         $('#live_data tr').each(function () {
-            // urutan kolom: No(0), Nama(1), Jabatan(2), Email(3), Telepon(4), Alamat(5)
             var jabatan = $(this).find('td').eq(2).text().trim();
             if (jabatan) {
                 counts[jabatan] = (counts[jabatan] || 0) + 1;
@@ -156,8 +152,11 @@ $data_pegawai = select("SELECT * FROM pegawai ORDER BY id_pegawai DESC");
             chartJabatanPegawaiInstance.data.datasets[0].data = values;
             chartJabatanPegawaiInstance.update();
         } else if (ctx) {
-            Chart.defaults.font.family = "'Source Sans Pro', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
-            Chart.defaults.color = '#6c757d';
+            // Chart.js v2 defaults
+            if (Chart.defaults && Chart.defaults.global) {
+                Chart.defaults.global.defaultFontFamily = "'Source Sans Pro', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+                Chart.defaults.global.defaultFontColor = '#6c757d';
+            }
 
             chartJabatanPegawaiInstance = new Chart(ctx, {
                 type: 'doughnut',
@@ -167,18 +166,15 @@ $data_pegawai = select("SELECT * FROM pegawai ORDER BY id_pegawai DESC");
                         data: values,
                         backgroundColor: palette,
                         borderColor: '#ffffff',
-                        borderWidth: 2,
-                        hoverOffset: 6
+                        borderWidth: 2
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '60%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 14, padding: 15 } },
-                        tooltip: { backgroundColor: '#343a40', cornerRadius: 4 }
-                    }
+                    cutoutPercentage: 60,
+                    legend: { position: 'bottom', labels: { boxWidth: 14, padding: 15 } },
+                    tooltips: { backgroundColor: '#343a40' }
                 }
             });
         }
