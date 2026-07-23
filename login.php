@@ -7,7 +7,7 @@ if (isset($_POST['login'])) {
     $username = mysqli_real_escape_string($db, $_POST['username']);
     $password = mysqli_real_escape_string($db, $_POST['password']);
 
-    $secret_key = "6LdheV0tAAAAABKgOobDbWLR2kFNMS_7U3ocEWGi";
+    $secret_key = "6LfBrmAtAAAAAIvEOK54S9XlJOhuBKVFJjyGza62";
 
     $verifikasi = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $secret_key . '&response=' . $_POST['g-recaptcha-response']);
 
@@ -122,7 +122,7 @@ if (isset($_POST['login'])) {
             </div>
 
             <div class="mb-3">
-                <div class="g-recaptcha" data-sitekey="6LdheV0tAAAAAH7cZ-UaAlJNulB4QqMhdudSsxeX"></div>
+                <div class="g-recaptcha" data-sitekey="6LfBrmAtAAAAAP4rlOMQt2-ULQEOg8X4uA1jM9Uk"></div>
 
             </div>
 
