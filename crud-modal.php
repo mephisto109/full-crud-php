@@ -351,5 +351,12 @@ if (isset($_POST['ubah'])) {
     })();
 </script>
 <?php endif; ?>
+<script>
+window.addEventListener("pageshow", function(event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+</script>
 
 <?php include 'layout/footer.php' ?>

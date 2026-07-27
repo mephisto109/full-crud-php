@@ -212,6 +212,13 @@ $chart_prodi_values = array_values($chart_prodi_counts);
         }
     })();
 </script>
+<script>
+window.addEventListener("pageshow", function(event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+</script>
 <?php endif; ?>
 
 <?php include 'layout/footer.php' ?>

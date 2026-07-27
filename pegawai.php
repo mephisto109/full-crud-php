@@ -180,5 +180,12 @@ $data_pegawai = select("SELECT * FROM pegawai ORDER BY id_pegawai DESC");
         }
     }
 </script>
+<script>
+window.addEventListener("pageshow", function(event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+</script>
 
 <?php include 'layout/footer.php' ?>

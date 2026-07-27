@@ -325,6 +325,13 @@ foreach ($data_barang as $barang_c) {
         }
     })();
 </script>
+<script>
+window.addEventListener("pageshow", function(event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+</script>
 <?php endif; ?>
 
 <?php include 'layout/footer.php' ?>
